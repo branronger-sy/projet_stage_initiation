@@ -1,0 +1,161 @@
+
+.wishlist-section {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: #fff;
+  border-radius: 16px;
+  margin: 30px auto;
+  max-width: 900px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  font-family: "Roboto", sans-serif;
+}
+
+.wishlist-section h2 {
+  font-size: 28px;
+  color: #178768;
+  margin-bottom: 10px;
+}
+
+.wishlist-count {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+.clear-wishlist {
+  display: inline-block;
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.clear-wishlist:hover {
+  background-color: #a93226;
+}
+#wishlist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+.product-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 340px;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+.image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.image-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+.image-wrapper:hover .btns {
+  opacity: 1;
+}
+.remove-x, .quick-view {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.remove-x {
+  background-color: #d52323;
+  color: white;
+  font-size: 18px;
+}
+.remove-x:hover { background-color: red; }
+.quick-view {
+  background-image: url("../images/headercomposants/oeil.png");
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.quick-view:hover { background-color: #eee; }
+.product-card h3 {
+  font-size: 18px;
+  margin: 10px 0 5px;
+  text-align: center;
+  color: #333;
+}
+.product-card p {
+  color: #178768;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.btn {
+  margin: 5px 4px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: center;
+}
+.add-btn {
+  background-color: #27ae60;
+  color: white;
+  width: 90%;
+}
+.add-btn:hover {
+  background: none;
+  color: #27ae60;
+  border: 2px solid #27ae60;
+}
+.more-btn {
+  background-color: #2980b9;
+  color: white;
+  width: 90%;
+}
+.more-btn:hover {
+  background: none;
+  color: #2980b9;
+  border: 2px solid #2980b9;
+}
+.remove-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+.remove-btn:hover {
+  background: none;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+}
+
+@media (max-width: 600px) {
+  .product-card { width: 90%; margin: auto; }
+  .image-wrapper { height: 160px; }
+}

@@ -1,0 +1,166 @@
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 12px;
+    border: 1px solid #eee;
+    text-align: left;
+    font-size: 14px;
+  }
+  
+  .orders-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+  
+  .btn-details {
+    background: #3498db;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+  }
+  
+  .btn-details:hover {
+    background: #2980b9;
+  }
+  
+  .order-section {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .order-section h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+  }
+.order-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+    .order-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .order-section h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 6px;
+  }
+    .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+    background: #f1f5f9;
+    color: #334155;
+  }
+  .badge.paid { background:#d1fae5; color:#065f46; }
+  .badge.pending { background:#fef9c3; color:#854d0e; }
+  .badge.failed, .badge.refused { background:#fee2e2; color:#991b1b; }
+  .badge.shipped { background:#e0f2fe; color:#075985; }
+  .badge.delivered { background:#dcfce7; color:#14532d; }
+  .badge.processing { background:#e5e7eb; color:#374151; }
+    .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    min-width: 600px;
+  }
+  .orders-table th,
+  .orders-table td {
+    padding: 12px;
+    border: 1px solid #eee;
+    text-align: left;
+    font-size: 14px;
+  }
+  .orders-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+  }
+  .orders-table tfoot th {
+    background: #fafafa;
+    font-weight: 700;
+  }
+  
+  @media (max-width: 768px) {
+    .order-grid {
+      grid-template-columns: 1fr;
+    }
+      .orders-table {
+      font-size: 13px;
+    }
+  
+    .orders-table th, 
+    .orders-table td {
+      padding: 8px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .order-section h3 {
+      font-size: 14px;
+    }
+  
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+    }
+  }
+.order-section form {
+  margin-top: 8px;
+}
+
+.order-section label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+.order-section select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  min-width: 160px;
+  font-size: 14px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.order-section select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.order-section button {
+  margin-left: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.order-section button:hover {
+  background: #0056b3;
+}

@@ -1,0 +1,126 @@
+.about-main {
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  background-color: #fefefe;
+
+}
+.about-section {
+  padding: 10px 20px;
+  margin: 0 auto;
+  max-width: 1000px;
+  text-align: left;
+}
+
+.about-section h2,
+.about-section h1 {
+  color: #178768;
+  font-size: 32px;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.about-section p,
+.about-section li {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+.about-hero {
+  text-align: center;
+  color: white;
+  padding: 60px 20px;
+  box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+  margin: 40px auto;
+  border-radius: 30px;
+}
+.about-hero:hover{
+    box-shadow: 15px 15px 35px rgba(0,0,0,0.3);
+    transition: all 1s ease;
+}
+.about-hero h1 {
+  font-size: 40px !important;
+}
+
+.about-hero p {
+  font-size: 25px !important;
+  max-width: 800px;
+  margin: 3px auto;
+  line-height: 1.6 !important;
+  text-align: center;
+}
+
+.cta-button,
+.btn-primary {
+  background-color: #178768;
+  color: white;
+  padding: 14px 28px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+  border: solid 2px #178768;
+}
+
+.cta-button:hover{
+  background: none;
+  color: #178768;
+  
+}
+
+.about-certifications ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 20px;
+}
+
+.about-certifications li {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.about-certifications li i {
+  color: #178768;
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.about-cta {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f4f9f7;
+}
+
+.about-cta h2 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .about-section {
+    padding: 40px 15px;
+  }
+
+  .about-section h1,
+  .about-section h2 {
+    font-size: 26px;
+  }
+
+  .about-hero h1 {
+    font-size: 32px;
+  }
+
+  .cta-button,
+  .btn-primary {
+    width: 100%;
+    text-align: center;
+  }
+}

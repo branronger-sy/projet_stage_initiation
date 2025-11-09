@@ -1,0 +1,161 @@
+
+.btn-primary {
+    background: #2c3e50;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover {
+    background: #34495e;
+  }
+    .table .btn-sm {
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-decoration: none;
+    color: #fff;
+    margin-right: 5px;
+    display: inline-block;
+  }
+  
+  .table .btn-sm.edit {
+    background: #3498db;
+  }
+  .table .btn-sm.edit:hover {
+    background: #2980b9;
+  }
+  
+  .table .btn-sm.delete {
+    background: #e74c3c;
+  }
+  .table .btn-sm.delete:hover {
+    background: #c0392b;
+  }
+    .table th,
+  .table td {
+    padding: 12px 10px;
+  }
+  
+  .table th {
+    background: #f8f8f8;
+    font-weight: bold;
+  }
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+    .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .sidebar-toggle {
+    font-size: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #2c3e50;
+  }
+    .content {
+    padding: 20px;
+  }
+    .card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  
+  .card h3 {
+    margin-bottom: 10px;
+  }
+    .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .table th {
+    background: #f0f0f0;
+  }
+    footer {
+    text-align: center;
+    padding: 15px;
+    color: #777;
+  }
+.btn-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .4rem .75rem;
+  border-radius: .5rem;
+  font-weight: 600;
+  font-size: .875rem;
+  line-height: 1;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, box-shadow .2s ease, transform .05s ease;
+}
+
+.btn-sm.delete {
+  --danger-bg: #dc2626;
+  --danger-bg-hover: #b91c1c;
+  --danger-border: #991b1b;
+  --danger-text: #ffffff;
+
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: var(--danger-border);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 4px 10px rgba(220, 38, 38, .15);
+}
+
+.btn-sm.delete:hover {
+  background: var(--danger-bg-hover);
+  border-color: var(--danger-border);
+  box-shadow: 0 2px 6px rgba(0,0,0,.12), 0 8px 18px rgba(185, 28, 28, .25);
+}
+
+.btn-sm.delete:active {
+  transform: translateY(1px) scale(.98);
+  box-shadow: 0 1px 3px rgba(0,0,0,.12);
+}
+
+.btn-sm.delete:focus-visible {
+  outline: 3px solid rgba(239, 68, 68, .35);
+  outline-offset: 2px;
+}
+
+.btn-sm.delete[aria-disabled="true"],
+.btn-sm.delete.disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-sm.delete::before {
+  content: "🗑";
+  font-size: .95em;
+  line-height: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-sm.delete {
+    --danger-bg: #ef4444;  
+    --danger-bg-hover: #dc2626;
+    --danger-border: #b91c1c;
+  }
+}

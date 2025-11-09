@@ -1,0 +1,52 @@
+@font-face {
+    font-family: Meriweither;
+    src: url("../fonts/MerriweatherSans-Medium.ttf");
+  }
+  @font-face {
+    font-family: ROBOTO;
+    src: url("../fonts/RobotoCondensed-Medium.ttf");
+  }
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 90px;
+    width: 100%;
+}
+main>h1{
+    background-color: #67b19c2e;
+    padding: 7% 25%;
+    margin: 40px auto;
+    color: #178768;
+    border-radius: 30px;
+    font-size: 2.3em;
+    width: 90%;
+    text-align: center;
+    line-height: 60px
+}
+.store-location{
+    width: 90%;
+}
+.container>h2{
+    font-size: 25px;
+    text-align: center;
+    font-family: Meriweither;
+    margin: 40px auto;
+    color: #178768;
+}
+.container>p{
+    margin: 40px auto;
+    text-align: center;
+    font-size: 29px; 
+    font-family: ROBOTO;
+}
+.map-container{
+    height: 600px;
+    border: solid 0.5px #178768;
+    box-shadow: 4px 9px 10px #0000005a;
+    border-radius: 30px;
+    margin: 40px auto;
+}
+.map-container>iframe{
+    border-radius: inherit;
+}
