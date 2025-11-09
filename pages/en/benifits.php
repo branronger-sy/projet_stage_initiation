@@ -1,6 +1,4 @@
-<?php
-declare(strict_types=1);
-?>
+
   <main>
     <header class="benefits-hero">
       <h1>Discover the Benefits of Pure Argan Oil</h1>

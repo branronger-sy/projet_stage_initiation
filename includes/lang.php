@@ -7,7 +7,6 @@ $lang = $_SESSION['lang'] ?? 'en';
 
 $texts = [
     'en' => [
-        // Header
         'home' => 'Home',
         'products' => 'Products',
         'benefits' => 'Benefits',
@@ -21,7 +20,6 @@ $texts = [
         'wishlist' => 'Wishlist',
         'my_account' => 'My Account',
 
-        // Footer
         'info' => 'Informations',
         'our_stores' => 'Our Stores',
         'delivery' => 'Delivery',
@@ -34,7 +32,6 @@ $texts = [
     ],
 
     'fr' => [
-        // Header
         'home' => 'Accueil',
         'products' => 'Produits',
         'benefits' => 'Bienfaits',
@@ -48,7 +45,6 @@ $texts = [
         'wishlist' => 'Favoris',
         'my_account' => 'Mon Compte',
 
-        // Footer
         'info' => 'Informations',
         'our_stores' => 'Nos Magasins',
         'delivery' => 'Livraison',

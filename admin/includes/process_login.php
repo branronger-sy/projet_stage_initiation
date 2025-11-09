@@ -77,10 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($attempts >= $max_attempts) {
             $_SESSION['lockout_seconds'] = $lockout_time;
-            $_SESSION['login_error'] = "🚫 Trop de tentatives échouées. Réessayez après " .
+            $_SESSION['login_error'] = "Trop de tentatives échouées. Réessayez après " .
                                        floor($lockout_time / 60) . "m " . ($lockout_time % 60) . "s.";
         } else {
-            $_SESSION['login_error'] = "❌ Identifiants invalides.";
+            $_SESSION['login_error'] = "Identifiants invalides.";
         }
 
         header("Location: ../login.php");

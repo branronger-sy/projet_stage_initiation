@@ -2284,3 +2284,9 @@ Stack trace:
 [08-Nov-2025 11:02:30 Europe/Berlin] PHP Deprecated:  Constant FILTER_SANITIZE_STRING is deprecated in C:\xampp\htdocs\final\public\index.php on line 53
 [08-Nov-2025 11:02:30 Europe/Berlin] PHP Warning:  session_set_cookie_params(): Session cookie parameters cannot be changed when a session is active in C:\xampp\htdocs\final\pages\fr\home.php on line 3
 [08-Nov-2025 11:02:30 Europe/Berlin] PHP Warning:  Header may not contain more than a single header, new line detected in C:\xampp\htdocs\final\pages\fr\home.php on line 19
+[09-Nov-2025 19:33:56 Europe/Berlin] PHP Deprecated:  Constant FILTER_SANITIZE_STRING is deprecated in C:\xampp\htdocs\final\public\index.php on line 53
+[09-Nov-2025 19:33:57 Europe/Berlin] PHP Warning:  session_set_cookie_params(): Session cookie parameters cannot be changed when a session is active in C:\xampp\htdocs\final\pages\en\home.php on line 3
+[09-Nov-2025 19:33:57 Europe/Berlin] PHP Warning:  Header may not contain more than a single header, new line detected in C:\xampp\htdocs\final\pages\en\home.php on line 20
+[09-Nov-2025 19:34:44 Europe/Berlin] PHP Deprecated:  Constant FILTER_SANITIZE_STRING is deprecated in C:\xampp\htdocs\final\public\index.php on line 53
+[09-Nov-2025 19:34:44 Europe/Berlin] PHP Warning:  session_set_cookie_params(): Session cookie parameters cannot be changed when a session is active in C:\xampp\htdocs\final\pages\en\home.php on line 3
+[09-Nov-2025 19:34:44 Europe/Berlin] PHP Warning:  Header may not contain more than a single header, new line detected in C:\xampp\htdocs\final\pages\en\home.php on line 20

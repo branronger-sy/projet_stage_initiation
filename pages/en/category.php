@@ -1,18 +1,8 @@
 <?php
-declare(strict_types=1);
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-
-$user_favorites = [];
-
-if (!empty($_SESSION['user_id']) && ctype_digit((string)$_SESSION['user_id'])) {
-    $stmt = $pdo->prepare("SELECT product_id FROM favoris WHERE user_id = :uid");
-    $stmt->bindValue(':uid', (int)$_SESSION['user_id'], PDO::PARAM_INT);
-    $stmt->execute();
-    $user_favorites = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+if (!empty($_SESSION['user_id'])) {
+  $stmt = $pdo->prepare("SELECT product_id FROM favoris WHERE user_id = ?");
+  $stmt->execute([(int)$_SESSION['user_id']]);
+  $user_favorites = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
 }
 
 $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
@@ -20,31 +10,30 @@ $category    = null;
 $products    = [];
 
 if ($category_id > 0) {
-    $stmt = $pdo->prepare("SELECT id, name_en FROM categories WHERE id = :cid LIMIT 1");
-    $stmt->bindValue(':cid', $category_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $category = $stmt->fetch(PDO::FETCH_ASSOC);
+  $stmt = $pdo->prepare("SELECT id, name_en FROM categories WHERE id = ?");
+  $stmt->execute([$category_id]);
+  $category = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($category) {
-        $stmt = $pdo->prepare("
-            SELECT 
-                p.id AS product_id,
-                COALESCE(v.var_name_en, p.name_en) AS name,
-                COALESCE(v.price, p.price) AS price,
-                i.image_url,
-                (SELECT COUNT(*) FROM product_variants v2 WHERE v2.product_id = p.id) AS variant_count
-            FROM products p
-            LEFT JOIN product_variants v 
-                ON p.id = v.product_id AND v.main_variant = 1
-            LEFT JOIN product_images i 
-                ON p.id = i.product_id AND i.is_main = 1
-            WHERE p.category_id = :cid
-        ");
-        $stmt->bindValue(':cid', $category_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    }
+  if ($category) {
+      $stmt = $pdo->prepare("
+          SELECT 
+              p.id AS product_id,
+              COALESCE(v.var_name_en, p.name_en) AS name,
+              COALESCE(v.price, p.price) AS price,
+              i.image_url,
+              (SELECT COUNT(*) FROM product_variants v2 WHERE v2.product_id = p.id) AS variant_count
+          FROM products p
+          LEFT JOIN product_variants v 
+              ON p.id = v.product_id AND v.main_variant = 1
+          LEFT JOIN product_images i 
+              ON p.id = i.product_id AND i.is_main = 1
+          WHERE p.category_id = ?
+      ");
+      $stmt->execute([$category_id]);
+      $products = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+  }
 }
+
 ?>
 <main>
   <?php if (!empty($category)): ?>

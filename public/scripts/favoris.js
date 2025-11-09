@@ -1,12 +1,11 @@
-const FAVORIS_ENDPOINT = 'favoris_toggle.php';
 
   function addToFavorites(productId, el, evt) {
     if (evt) { evt.preventDefault(); evt.stopPropagation(); }
 
-    fetch(FAVORIS_ENDPOINT, {
+    fetch('favoris_toggle.php', {
       method: 'POST',
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: 'product_id=' + encodeURIComponent(productId)
+      body: 'product_id='+productId
     })
     .then(res => res.json())
     .then(data => {
@@ -20,13 +19,11 @@ const FAVORIS_ENDPOINT = 'favoris_toggle.php';
         el.classList.remove('active');
       }
 
-      // حدّث العداد من السيرفر (أدق من الجمع/الطرح المحلي)
       const badge = document.getElementById('fav-count');
       if (badge && typeof data.count !== 'undefined') {
         badge.textContent = data.count;
       }
     })
-    .catch(() => alert('Network error'));
   }
 
 function showLoginAlert() {

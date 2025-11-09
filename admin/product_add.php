@@ -2,34 +2,16 @@
 include "includes/auth.php";
 include "includes/header.php";
 include "includes/db.php";
-
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
 $categories = $conn->query("SELECT id, name_fr FROM categories");
-
-function clean($value) {
-    return htmlspecialchars(trim((string)$value), ENT_QUOTES, 'UTF-8');
-}
-
-function isValidImage($filename) {
-    $allowed = ['jpg','jpeg','png','gif','webp'];
-    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    return in_array($ext, $allowed);
-}
-
-function safeFileName($originalName) {
-    $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-    return uniqid("img_", true) . "." . $ext;
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        $name_fr = clean($_POST['name_fr'] ?? '');
-        $name_ar = clean($_POST['name_ar'] ?? '');
-        $name_en = clean($_POST['name_en'] ?? '');
-        $desc_fr = clean($_POST['description_fr'] ?? '');
-        $desc_ar = clean($_POST['description_ar'] ?? '');
-        $desc_en = clean($_POST['description_en'] ?? '');
+        $name_fr = $_POST['name_fr'] ?? '';
+        $name_ar = $_POST['name_ar'] ?? '';
+        $name_en = $_POST['name_en'] ?? '';
+        $desc_fr = $_POST['description_fr'] ?? '';
+        $desc_ar = $_POST['description_ar'] ?? '';
+        $desc_en = $_POST['description_en'] ?? '';
         $price   = ($_POST['price'] !== '') ? floatval($_POST['price']) : null;
         $stock   = intval($_POST['stock'] ?? 0);
         $category_id = intval($_POST['category_id'] ?? 0);
@@ -60,12 +42,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($tmp == "") continue;
 
                 $originalName = $_FILES['images']['name'][$key];
-                if (!isValidImage($originalName)) continue;
 
-                $fileName = safeFileName($originalName);
+                $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+                $fileName = uniqid("img_", true) . "." . $ext;
                 $absolutePath = $uploadDir . $fileName;
                 $dbPath = "uploads/" . $fileName;
-
+                
                 if (move_uploaded_file($tmp, $absolutePath)) {
                     $stmt = $conn->prepare("INSERT INTO product_images (product_id, image_url, is_main) VALUES (?, ?, 1)");
                     $stmt->bind_param("is", $product_id, $dbPath);
@@ -74,24 +56,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
-
         if ($has_variants && !empty($_POST['variant_name_fr'][0])) {
             $main_variant_index = isset($_POST['main_variant']) ? intval($_POST['main_variant']) : -1;
 
             foreach ($_POST['variant_name_fr'] as $i => $v_name_fr) {
                 if (trim($v_name_fr) === '') continue;
 
-                $v_name_fr = clean($v_name_fr);
-                $v_name_ar = clean($_POST['variant_name_ar'][$i] ?? '');
-                $v_name_en = clean($_POST['variant_name_en'][$i] ?? '');
-                $v_size    = clean($_POST['variant_size'][$i] ?? '');
+                $v_name_fr = $v_name_fr;
+                $v_name_ar = $_POST['variant_name_ar'][$i] ?? '';
+                $v_name_en = $_POST['variant_name_en'][$i] ?? '';
+                $v_size    = $_POST['variant_size'][$i] ?? '';
                 $v_price   = floatval($_POST['variant_price'][$i] ?? 0);
                 $v_weight  = floatval($_POST['variant_weight'][$i] ?? 0);
-                $v_bottle  = clean($_POST['variant_bottle'][$i] ?? '');
+                $v_bottle  = $_POST['variant_bottle'][$i] ?? '';
                 $v_stock   = intval($_POST['variant_stock'][$i] ?? 0);
-                $v_desc_fr = clean($_POST['variant_description_fr'][$i] ?? '');
-                $v_desc_ar = clean($_POST['variant_description_ar'][$i] ?? '');
-                $v_desc_en = clean($_POST['variant_description_en'][$i] ?? '');
+                $v_desc_fr = $_POST['variant_description_fr'][$i] ?? '';
+                $v_desc_ar = $_POST['variant_description_ar'][$i] ?? '';
+                $v_desc_en = $_POST['variant_description_en'][$i] ?? '';
 
                 $main_variant = ($main_variant_index === $i) ? 1 : 0;
 
@@ -112,9 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($tmp == "") continue;
 
                         $originalName = $_FILES['variant_images']['name'][$i][$k];
-                        if (!isValidImage($originalName)) continue;
 
-                        $fileName = safeFileName($originalName);
+                        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+                        $fileName = uniqid("img_", true) . "." . $ext;
                         $absolutePath = $uploadDir . $fileName;
                         $dbPath = "uploads/" . $fileName;
 
@@ -130,9 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        echo "<p style='color:green'>✅ Product added successfully!</p>";
+        echo "<p style='color:green'>Product added successfully!</p>";
     } catch (Exception $e) {
-        echo "<p style='color:red'>❌ Error: " . htmlspecialchars($e->getMessage()) . "</p>";
+        echo "<p style='color:red'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     }
 }
 ?>
@@ -173,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Category:
           <select name="category_id">
             <?php while ($c = $categories->fetch_assoc()): ?>
-              <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name_fr']) ?></option>
+              <option value="<?= $c['id'] ?>"><?= $c['name_fr'] ?></option>
             <?php endwhile; ?>
           </select>
         </label>

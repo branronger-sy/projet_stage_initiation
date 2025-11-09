@@ -8,15 +8,6 @@ function scrollCarousel(direction) {
       behavior: 'smooth'
     });
   }
-  function scrollCarousel1(direction) {
-    const container = document.getElementById("prod-cont1");
-    const card = container.querySelector('.product-card');  
-    const cardWidth = card.offsetWidth + 20;
-    container.scrollBy({
-      left: direction * cardWidth,
-      behavior: 'smooth'
-    });
-  }
   a=0;
   function wish(elm){
     if(a==0)
