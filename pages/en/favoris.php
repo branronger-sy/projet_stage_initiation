@@ -1,71 +1,48 @@
 <?php
-declare(strict_types=1);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-
-if (empty($_SESSION['user_id']) || !ctype_digit((string)$_SESSION['user_id'])) {
+if (empty($_SESSION['user_id'])) {
     header("Location: index.php?page=login");
     exit;
 }
+
 $user_id = (int)$_SESSION['user_id'];
 
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+// إزالة عنصر واحد من المفضلة
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $csrf_token = $_POST['csrf_token'] ?? '';
-    if (!hash_equals($_SESSION['csrf_token'], $csrf_token)) {
-        die("⚠️ Invalid request.");
-    }
-    if (!empty($_POST['remove_id']) && ctype_digit((string)$_POST['remove_id'])) {
+    if (!empty($_POST['remove_id'])) {
         $remove_id = (int)$_POST['remove_id'];
-        try {
-            $stmt = $pdo->prepare("DELETE FROM favoris WHERE id = :id AND user_id = :uid");
-            $stmt->bindValue(':id', $remove_id, PDO::PARAM_INT);
-            $stmt->bindValue(':uid', $user_id, PDO::PARAM_INT);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error removing favorite: " . $e->getMessage());
-        }
+        $stmt = $pdo->prepare("DELETE FROM favoris WHERE id = ? AND user_id = ?");
+        $stmt->execute([$remove_id, $user_id]);
     }
+
+    // حذف جميع العناصر
     if (isset($_POST['clear_all'])) {
-        try {
-            $stmt = $pdo->prepare("DELETE FROM favoris WHERE user_id = :uid");
-            $stmt->bindValue(':uid', $user_id, PDO::PARAM_INT);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error clearing favorites: " . $e->getMessage());
-        }
+        $stmt = $pdo->prepare("DELETE FROM favoris WHERE user_id = ?");
+        $stmt->execute([$user_id]);
     }
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-$favorites = [];
-try {
-    $stmt = $pdo->prepare("
-        SELECT 
-            f.id AS fav_id, 
-            p.id AS product_id, 
-            p.name_en, 
-            p.price AS base_price,
-            COALESCE(v.price, p.price) AS final_price,
-            pi.image_url,
-            (SELECT COUNT(*) FROM product_variants WHERE product_id = p.id) AS variant_count
-        FROM favoris f
-        JOIN products p ON f.product_id = p.id
-        LEFT JOIN product_variants v ON v.product_id = p.id AND v.main_variant = 1
-        LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_main = 1
-        WHERE f.user_id = :uid
-    ");
-    $stmt->bindValue(':uid', $user_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $favorites = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-} catch (PDOException $e) {
-    error_log("Error fetching favorites: " . $e->getMessage());
-}
+// جلب المفضلات
+$stmt = $pdo->prepare("
+    SELECT 
+        f.id AS fav_id, 
+        p.id AS product_id, 
+        p.name_en, 
+        p.price AS base_price,
+        COALESCE(v.price, p.price) AS final_price,
+        pi.image_url,
+        (SELECT COUNT(*) FROM product_variants WHERE product_id = p.id) AS variant_count
+    FROM favoris f
+    JOIN products p ON f.product_id = p.id
+    LEFT JOIN product_variants v ON v.product_id = p.id AND v.main_variant = 1
+    LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_main = 1
+    WHERE f.user_id = ?
+");
+$stmt->execute([$user_id]);
+$favorites = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 ?>
 
 <main>
@@ -75,8 +52,7 @@ try {
       You have <?= count($favorites) ?> items
     </div>
     <form method="post" style="display:inline;">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
-        <button type="submit" name="clear_all" class="clear-wishlist btn">🗑️ Clear All</button>
+        <button type="submit" name="clear_all" class="clear-wishlist btn">Clear All</button>
     </form>
   </section>
 
@@ -112,9 +88,8 @@ try {
             <?php endif; ?>
 
             <form method="post" style="display:inline;">
-              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
               <input type="hidden" name="remove_id" value="<?= (int)$fav['fav_id'] ?>">
-              <button type="submit" class="btn remove-btn">❌ Remove</button>
+              <button type="submit" class="btn remove-btn">Remove</button>
             </form>
           </div>
         </div>

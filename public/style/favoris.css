@@ -159,3 +159,78 @@
   .product-card { width: 90%; margin: auto; }
   .image-wrapper { height: 160px; }
 }
+.product-card div {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.btn {
+  position: relative;
+  padding: 10px 18px;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  background: #ccc;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: skewX(-25deg);
+  transition: left 0.5s ease;
+}
+.btn:hover::before {
+  left: 125%;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #16a085, #27ae60);
+}
+.add-btn:hover {
+  background: linear-gradient(135deg, #1abc9c, #2ecc71);
+  transform: translateY(-3px);
+}
+
+.more-btn {
+  background: linear-gradient(135deg, #2980b9, #3498db);
+}
+.more-btn:hover {
+  background: linear-gradient(135deg, #3498db, #5dade2);
+  transform: translateY(-3px);
+}
+
+.remove-btn {
+  background: linear-gradient(135deg, #e74c3c, #ff6b5c);
+}
+.remove-btn:hover {
+  background: linear-gradient(135deg, #ff6b5c, #ff8a75);
+  transform: translateY(-3px);
+}
+
+.btn:active {
+  transform: scale(0.96);
+  box-shadow: none;
+}
+
+@media (max-width: 600px) {
+  .product-card div {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn {
+    width: 100%;
+  }
+}

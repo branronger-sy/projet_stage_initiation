@@ -1,6 +1,3 @@
-<?php
-declare(strict_types=1);
-?>
  <main>
     <section class="delivery-section">
         <div class="delivery-container">
