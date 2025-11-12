@@ -18,17 +18,11 @@ if ($totalMAD < MIN_ORDER_MAD) {
     exit;
 }
 
-
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(E_ALL);
-
 if (empty($_SESSION['checkout_progress']['shipping'])) {
     header("Location: index.php?page=home");
     exit;
 }
 
-require_once '../includes/config.php';
 
 $_SESSION['checkout_progress']['payment'] = true;
 $_SESSION['step'] = 'payment';
@@ -57,7 +51,7 @@ $total_usd = round($total_mad * (RATES['USD'] ?? 0.1), 2);
 $total_products_converted = convertPrice((float)$total_products);
 $total_shipping_converted = convertPrice((float)$total_shipping);
 $total_converted          = convertPrice((float)$total_mad);
-$clientId = getenv('PAYPAL_CLIENT_ID');
+$clientId = 'AcwPzd4ufDoHiYZSvY_tDcIkaR2KgNHY3ruNDUmcWCw0QyshN1Rn9l-aD1V1qcNEh7r1tA0whxghHFet';
 if (!$clientId) {
     die("PayPal client ID not configured");
 }

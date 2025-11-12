@@ -1,56 +1,24 @@
 <?php
-declare(strict_types=1);
 
-if (session_status() !== PHP_SESSION_ACTIVE)
+if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
-    error_log('POST hit ' . __FILE__ . ' payload: ' . json_encode($_POST));
+}
 
 require '../includes/db.php';
 require '../includes/currency.php';
 
-ini_set('display_errors', '0'); 
-ini_set('log_errors', '1');    
-error_reporting(E_ALL);
 
-header('Content-Type: application/json; charset=utf-8');
-
-set_exception_handler(function ($e) {
-    error_log('[EXCEPTION] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'server_error']);
-    exit;
-});
-
-set_error_handler(function($severity, $message, $file, $line) {
-    throw new ErrorException($message, 0, $severity, $file, $line);
-});
 
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
-
-function require_method(string $method): void {
-    if ($_SERVER['REQUEST_METHOD'] !== strtoupper($method)) {
-        http_response_code(405);
-        echo json_encode(['status' => 'method_not_allowed']);
-        exit;
-    }
-}
-
-function get_int(array $src, string $key, int $default = 0): int {
-    return isset($src[$key]) && ctype_digit((string)$src[$key])
-        ? (int)$src[$key]
-        : $default;
-}
-
 if (($_POST['action'] ?? '') === 'add') {
-    require_method('POST');
 
-    try {
-        $id         = get_int($_POST, 'id');
-        $variant_id = ($_POST['variant_id'] ?? '') !== '' ? get_int($_POST, 'variant_id', 0) : null;
-        $quantity   = max(1, get_int($_POST, 'quantity', 1));
+    $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+    $variant_id = isset($_POST['variant_id']) && $_POST['variant_id'] !== '' ? (int) $_POST['variant_id'] : null;
+    $quantity = isset($_POST['quantity']) ? max(1, (int) $_POST['quantity']) : 1;
+    
 
         if ($id <= 0 || $quantity <= 0) {
             echo json_encode(['status' => 'invalid_input']);
@@ -67,7 +35,7 @@ if (($_POST['action'] ?? '') === 'add') {
                 v.id AS variant_id
             FROM products p
             LEFT JOIN product_variants v 
-                ON p.id = v.product_id AND (v.id = ? OR ? IS NULL)
+                ON p.id = v.product_id AND (v.id = ?)
             LEFT JOIN product_images vi 
                 ON vi.variant_id = v.id
             LEFT JOIN product_images i 
@@ -75,7 +43,7 @@ if (($_POST['action'] ?? '') === 'add') {
             WHERE p.id = ?
             LIMIT 1
         ");
-        $stmt->execute([$variant_id, $variant_id, $id]);
+        $stmt->execute([$variant_id, $id]);
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($product) {
@@ -106,21 +74,11 @@ if (($_POST['action'] ?? '') === 'add') {
             echo json_encode(['status' => 'not_found']);
         }
         exit;
-
-    } catch (Throwable $e) {
-        error_log('[cart_add] ' . $e->getMessage() . ' | payload: ' . json_encode($_POST));
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'server_error']);
-        exit;
-    }
 }
 
 if (($_POST['action'] ?? '') === 'remove') {
-    require_method('POST');
-
-    try {
-        $id         = get_int($_POST, 'id');
-        $variant_id = ($_POST['variant_id'] ?? '') !== '' ? get_int($_POST, 'variant_id', 0) : null;
+    $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+    $variant_id = isset($_POST['variant_id']) && $_POST['variant_id'] !== '' ? (int) $_POST['variant_id'] : null;    
 
         if ($id <= 0) {
             echo json_encode(['status' => 'invalid_input']);
@@ -139,19 +97,9 @@ if (($_POST['action'] ?? '') === 'remove') {
 
         echo json_encode(['status' => $removed ? 'removed' : 'not_found']);
         exit;
-
-    } catch (Throwable $e) {
-        error_log('[cart_remove] ' . $e->getMessage() . ' | payload: ' . json_encode($_POST));
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'server_error']);
-        exit;
-    }
 }
 
 if (($_GET['action'] ?? '') === 'get') {
-    require_method('GET');
-
-    try {
         $convertedCart = [];
         $total = 0;
 
@@ -178,15 +126,7 @@ if (($_GET['action'] ?? '') === 'get') {
             'currency' => $_SESSION['currency'] ?? 'MAD'
         ]);
         exit;
-
-    } catch (Throwable $e) {
-        error_log('[cart_get] ' . $e->getMessage());
-        http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'server_error']);
-        exit;
-    }
 }
 
-http_response_code(400);
 echo json_encode(['status' => 'invalid_action']);
 exit;

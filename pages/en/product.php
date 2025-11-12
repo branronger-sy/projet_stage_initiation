@@ -48,7 +48,7 @@ function fullPath($path) {
 
 $productPriceRaw = $product['price'] ?? ($variants[0]['price'] ?? null);
 $convertedProductPrice = convertPrice($productPriceRaw);
-$currencyLabel = 'MAD';
+$currencyLabel = $selectedCurrency;
 
 $cat_stmt = $pdo->prepare("SELECT name_en FROM categories WHERE id = ?");
 $cat_stmt->execute([$product['category_id']]);

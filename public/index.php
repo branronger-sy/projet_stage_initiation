@@ -1,4 +1,6 @@
 <?php
+ob_start();
+
 session_start();
 require '../includes/db.php';
 
@@ -49,6 +51,7 @@ $query_last = "
 SELECT 
     p.id AS product_id,
     COALESCE(v.var_name_en, p.name_en) AS name_en,
+    COALESCE(v.var_name_fr, p.name_fr) AS name_fr,
     COALESCE(v.price, p.price) AS price,
     i.image_url,
     (SELECT COUNT(*) FROM product_variants v2 WHERE v2.product_id = p.id) AS variant_count
@@ -132,6 +135,7 @@ $page_scripts = [
     'success' => ['scripts/header.js', 'scripts/bag.js', 'scripts/search.js'],
     'search' => ['scripts/header.js', 'scripts/bag.js', 'scripts/search.js'],
 ];
+
 $page = $_GET['page'] ?? 'home';
 if (!array_key_exists($page, $allowed_pages)) {
     $page = 'home';
@@ -147,4 +151,6 @@ if (!file_exists($page_path)) {
 include '../includes/header.php';
 include $page_path;
 include '../includes/footer.php';
+
+ob_end_flush();
 ?>

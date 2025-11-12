@@ -132,7 +132,6 @@
 }
 .add-btn:hover {
   background: none;
-  color: #27ae60;
   border: 2px solid #27ae60;
 }
 .more-btn {
@@ -151,7 +150,6 @@
 }
 .remove-btn:hover {
   background: none;
-  color: #e74c3c;
   border: 2px solid #e74c3c;
 }
 

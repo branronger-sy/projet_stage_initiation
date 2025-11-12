@@ -4,10 +4,6 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 const MIN_ORDER_MAD = 500.0;
 
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
 $cart = $_SESSION['cart'] ?? [];
 
 function calc_cart_total_mad(array $cart): float {
@@ -21,20 +17,15 @@ function calc_cart_total_mad(array $cart): float {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $postedCsrf = $_POST['csrf_token'] ?? '';
-    if (!hash_equals($_SESSION['csrf_token'], (string)$postedCsrf)) {
-        http_response_code(400);
-        die('Invalid CSRF token');
-    }
 
     if (isset($_POST['remove_item'])) {
-        $idx = filter_input(INPUT_POST, 'remove_item', FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
-        if ($idx !== false && $idx !== null && array_key_exists($idx, $_SESSION['cart'])) {
+        $idx = intval($_POST['remove_item']);
+        if (isset($_SESSION['cart'][$idx])) {
             unset($_SESSION['cart'][$idx]);
             $_SESSION['cart'] = array_values($_SESSION['cart']);
         }
         $_SESSION['cart_total_mad'] = calc_cart_total_mad($_SESSION['cart']);
-        header('Location: ' . filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL));
+        header('Location: ' . $_SERVER['REQUEST_URI']);
         exit;
     }
 
@@ -50,16 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         $_SESSION['cart_total_mad'] = calc_cart_total_mad($_SESSION['cart']);
-        if ($_SESSION['cart_total_mad'] < MIN_ORDER_MAD) {
-            $_SESSION['checkout_error'] = "The minimum order amount is " . number_format(MIN_ORDER_MAD, 2) . " MAD.";
-            header('Location: ' . filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL));
-            exit;
-        } else {
+
+        if ($_SESSION['cart_total_mad'] >= MIN_ORDER_MAD) {
             $_SESSION['checkout_progress']['summary'] = true;
             $_SESSION['step'] = 'summary';
-            header('Location: ' . filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL));
-            exit;
         }
+
+        header('Location: ' . $_SERVER['REQUEST_URI']);
+        exit;
     }
 }
 
@@ -75,9 +64,8 @@ $_SESSION['cart_total_mad'] = $totalMAD;
     <div class="step">04. Shipping</div>
     <div class="step">05. Payment</div>
   </section>
-  <form id="cart-form" method="post" action="<?= htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES) ?>">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES) ?>">
 
+  <form id="cart-form" method="post" action="<?= $_SERVER['REQUEST_URI'] ?>">
     <table class="cart-summary-table">
       <thead>
         <tr>
@@ -95,26 +83,20 @@ $_SESSION['cart_total_mad'] = $totalMAD;
             $priceMAD = isset($item['price']) ? floatval($item['price']) : 0.0;
             $quantity = isset($item['quantity']) ? intval($item['quantity']) : 0;
             $subtotalMAD = $priceMAD * $quantity;
-            $priceConverted = convertPrice($priceMAD);
-            $subtotalConverted = convertPrice($subtotalMAD);
         ?>
         <tr>
           <td data-label="Image">
-            <img src="<?= htmlspecialchars($item['image'] ?? '', ENT_QUOTES) ?>" width="60" alt="<?= htmlspecialchars($item['name'] ?? '', ENT_QUOTES) ?>">
+            <img src="<?= $item['image'] ?? '' ?>" width="60" alt="<?= $item['name'] ?? '' ?>">
           </td>
-          <td data-label="Product"><?= htmlspecialchars($item['name'] ?? '', ENT_QUOTES) ?></td>
+          <td data-label="Product"><?= $item['name'] ?? '' ?></td>
           <td data-label="Availability"><span class="instock">In stock</span></td>
-          <td data-label="Unit price"><?= number_format($priceConverted, 2) . " " . htmlspecialchars($selectedCurrency ?? '', ENT_QUOTES) ?></td>
+          <td data-label="Unit price"><?= number_format($priceMAD, 2) ?> MAD</td>
           <td data-label="Qty">
-            <input type="number" 
-                   name="quantity[<?= intval($index) ?>]" 
-                   value="<?= max(1, $quantity) ?>" 
-                   min="1" 
-                   style="width:60px;">
+            <input type="number" name="quantity[<?= $index ?>]" value="<?= max(1, $quantity) ?>" min="1" style="width:60px;">
           </td>
-          <td data-label="Total"><?= number_format($subtotalConverted, 2) . " " . htmlspecialchars($selectedCurrency ?? '', ENT_QUOTES) ?></td>
+          <td data-label="Total"><?= number_format($subtotalMAD, 2) ?> MAD</td>
           <td data-label="Action">
-            <button type="submit" class="remove" name="remove_item" value="<?= intval($index) ?>" onclick="return confirm('Are you sure you want to remove this product?');">
+            <button type="submit" class="remove" name="remove_item" value="<?= $index ?>" onclick="return confirm('Are you sure you want to remove this product?');">
               Remove
             </button>
           </td>
@@ -124,9 +106,7 @@ $_SESSION['cart_total_mad'] = $totalMAD;
       <tfoot>
         <tr>
           <td colspan="5" class="text-right">TOTAL:</td>
-          <td class="total-amount">
-            <?= number_format(convertPrice($totalMAD), 2) . " " . htmlspecialchars($selectedCurrency ?? '', ENT_QUOTES) ?>
-          </td>
+          <td class="total-amount"><?= number_format($totalMAD, 2) ?> MAD</td>
           <td></td>
         </tr>
       </tfoot>

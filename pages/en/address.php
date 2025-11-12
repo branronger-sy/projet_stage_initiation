@@ -1,61 +1,19 @@
 <?php
-declare(strict_types=1);
 if (session_status() === PHP_SESSION_NONE) session_start();
-const MIN_ORDER_MAD = 500.0;
-function calc_cart_total_mad_simple(array $cart = []): float {
-    $total = 0.0;
-    foreach ($cart as $item) {
-        $price = isset($item['price']) ? floatval($item['price']) : 0.0;
-        $qty = isset($item['quantity']) ? max(0, intval($item['quantity'])) : 0;
-        $total += $price * $qty;
-    }
-    return $total;
-}
-$cart = $_SESSION['cart'] ?? [];
-$totalMAD = calc_cart_total_mad_simple($cart);
-if ($totalMAD < MIN_ORDER_MAD) {
-    header('Location: index.php?page=summary');
-    exit;
-}
-
-header('X-Frame-Options: DENY');
-header('X-Content-Type-Options: nosniff');
-header('Referrer-Policy: no-referrer-when-downgrade');
-if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
-    header('Strict-Transport-Security: max-age=63072000; includeSubDomains; preload');
-}
 
 if (!isset($_SESSION['user_id'])) {
-    if (empty($_SESSION['checkout_progress']['summary'])) {
-        header("Location: index.php?page=home");
-        exit;
-    } else {
-        header("Location: index.php?page=login&from=checkout");
-        exit;
-    }
-}
-
-if (
-    !isset($_SESSION['checkout_progress']['summary']) ||
-    !isset($_SESSION['checkout_progress']['login']) ||
-    ($_SESSION['step'] !== 'login' && $_SESSION['step'] !== 'address')
-) {
-    header("Location: index.php?page=home");
+    header("Location: index.php?page=login&from=checkout");
     exit;
 }
-$_SESSION['checkout_progress']['address'] = true;
+
 $_SESSION['step'] = 'address';
 
 $user_id = (int) $_SESSION['user_id'];
-try {
+
     $stmt = $pdo->prepare("SELECT id, name FROM countries ORDER BY name ASC");
     $stmt->execute();
     $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    error_log("countries load error: " . $e->getMessage());
-    $countries = [];
-}
-try {
+
     $stmt = $pdo->prepare("
         SELECT 
             s.full_name AS s_full_name, s.address AS s_address, s.city AS s_city, s.zip_code AS s_zip, s.country_id AS s_country, s.phone AS s_phone,
@@ -68,21 +26,14 @@ try {
     ");
     $stmt->execute([$user_id]);
     $address = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
-} catch (PDOException $e) {
-    error_log("address load error: " . $e->getMessage());
-    $address = [];
-}
 
 $hasAddress = !empty($address) && !empty($address['s_full_name']);
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-$csrfToken = $_SESSION['csrf_token'];
-
+$_SESSION['checkout_progress']['address'] = true;
+$_SESSION['step'] = 'address';
 ?>
 
 <main class="container">
-    <section class="steps" aria-hidden="false">
+    <section class="steps">
         <div class="step">01. Summary</div>
         <div class="step">02. Sign in</div>
         <div class="step active">03. Address</div>
@@ -90,19 +41,19 @@ $csrfToken = $_SESSION['csrf_token'];
         <div class="step">05. Payment</div>
     </section>
 
-    <section class="address-form" aria-live="polite">
+    <section class="address-form">
 
         <?php if ($hasAddress): ?>
         <div id="address_view">
             <h2>Your Shipping Address</h2>
-            <p><strong><?= htmlspecialchars($address['s_full_name'], ENT_QUOTES, 'UTF-8') ?></strong></p>
-            <p><?= htmlspecialchars($address['s_address'], ENT_QUOTES, 'UTF-8') ?>, <?= htmlspecialchars($address['s_city'], ENT_QUOTES, 'UTF-8') ?> <?= htmlspecialchars($address['s_zip'], ENT_QUOTES, 'UTF-8') ?></p>
-            <p><?= htmlspecialchars($address['s_phone'], ENT_QUOTES, 'UTF-8') ?></p>
+            <p><strong><?= $address['s_full_name'] ?></strong></p>
+            <p><?= $address['s_address'] ?>, <?= $address['s_city'] ?> <?= $address['s_zip'] ?></p>
+            <p><?= $address['s_phone'] ?></p>
 
             <h2>Your Billing Address</h2>
-            <p><strong><?= htmlspecialchars($address['b_full_name'], ENT_QUOTES, 'UTF-8') ?></strong></p>
-            <p><?= htmlspecialchars($address['b_address'], ENT_QUOTES, 'UTF-8') ?>, <?= htmlspecialchars($address['b_city'], ENT_QUOTES, 'UTF-8') ?> <?= htmlspecialchars($address['b_zip'], ENT_QUOTES, 'UTF-8') ?></p>
-            <p><?= htmlspecialchars($address['b_phone'], ENT_QUOTES, 'UTF-8') ?></p>
+            <p><strong><?= $address['b_full_name'] ?></strong></p>
+            <p><?= $address['b_address'] ?>, <?= $address['b_city'] ?> <?= $address['b_zip'] ?></p>
+            <p><?= $address['b_phone'] ?></p>
 
             <div class="actions">
                 <button id="changeAddressBtn" class="btn" type="button">Change Address</button>
@@ -113,34 +64,32 @@ $csrfToken = $_SESSION['csrf_token'];
 
         <div id="address_form" style="<?= $hasAddress ? 'display:none;' : '' ?>">
             <h2><?= $hasAddress ? 'Edit Address' : 'Enter Address' ?></h2>
-            <form id="addressForm" method="post" novalidate>
-                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-
-                <!-- Shipping -->
+            <form id="addressForm" method="post">
+                
                 <label for="shipping_fullName">Full Name</label>
-                <input id="shipping_fullName" type="text" name="shipping_fullName" required maxlength="150" value="<?= htmlspecialchars($address['s_full_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <input id="shipping_fullName" type="text" name="shipping_fullName" required maxlength="150" value="<?= $address['s_full_name'] ?? '' ?>">
 
                 <label for="shipping_address">Address</label>
-                <input id="shipping_address" type="text" name="shipping_address" required maxlength="255" value="<?= htmlspecialchars($address['s_address'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <input id="shipping_address" type="text" name="shipping_address" required maxlength="255" value="<?= $address['s_address'] ?? '' ?>">
 
                 <label for="shipping_city">City</label>
-                <input id="shipping_city" type="text" name="shipping_city" required maxlength="100" value="<?= htmlspecialchars($address['s_city'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <input id="shipping_city" type="text" name="shipping_city" required maxlength="100" value="<?= $address['s_city'] ?? '' ?>">
 
                 <label for="shipping_zip">Zip Code</label>
-                <input id="shipping_zip" type="text" name="shipping_zip" required maxlength="20" value="<?= htmlspecialchars($address['s_zip'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <input id="shipping_zip" type="text" name="shipping_zip" required maxlength="20" value="<?= $address['s_zip'] ?? '' ?>">
 
                 <label for="shipping_country">Country</label>
                 <select id="shipping_country" name="shipping_country" required>
                     <option value="" disabled <?= empty($address['s_country']) ? 'selected' : '' ?>>Choose Country</option>
                     <?php foreach ($countries as $country): ?>
                         <option value="<?= (int)$country['id'] ?>" <?= (isset($address['s_country']) && (int)$address['s_country'] === (int)$country['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($country['name'], ENT_QUOTES, 'UTF-8') ?>
+                            <?= $country['name'] ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
 
                 <label for="shipping_phone">Phone</label>
-                <input id="shipping_phone" type="text" name="shipping_phone" required maxlength="20" value="<?= htmlspecialchars($address['s_phone'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                <input id="shipping_phone" type="text" name="shipping_phone" required maxlength="20" value="<?= $address['s_phone'] ?? '' ?>">
 
                 <hr>
                 <h2>Billing Address</h2>
@@ -151,29 +100,29 @@ $csrfToken = $_SESSION['csrf_token'];
 
                 <div id="billing_fields">
                     <label for="billing_fullName">Full Name</label>
-                    <input id="billing_fullName" type="text" name="billing_fullName" maxlength="150" value="<?= htmlspecialchars($address['b_full_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input id="billing_fullName" type="text" name="billing_fullName" maxlength="150" value="<?= $address['b_full_name'] ?? '' ?>">
 
                     <label for="billing_address">Address</label>
-                    <input id="billing_address" type="text" name="billing_address" maxlength="255" value="<?= htmlspecialchars($address['b_address'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input id="billing_address" type="text" name="billing_address" maxlength="255" value="<?= $address['b_address'] ?? '' ?>">
 
                     <label for="billing_city">City</label>
-                    <input id="billing_city" type="text" name="billing_city" maxlength="100" value="<?= htmlspecialchars($address['b_city'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input id="billing_city" type="text" name="billing_city" maxlength="100" value="<?= $address['b_city'] ?? '' ?>">
 
                     <label for="billing_zip">Zip Code</label>
-                    <input id="billing_zip" type="text" name="billing_zip" maxlength="20" value="<?= htmlspecialchars($address['b_zip'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input id="billing_zip" type="text" name="billing_zip" maxlength="20" value="<?= $address['b_zip'] ?? '' ?>">
 
                     <label for="billing_country">Country</label>
                     <select id="billing_country" name="billing_country">
                         <option value="" disabled <?= empty($address['b_country']) ? 'selected' : '' ?>>Choose Country</option>
                         <?php foreach ($countries as $country): ?>
                             <option value="<?= (int)$country['id'] ?>" <?= (isset($address['b_country']) && (int)$address['b_country'] === (int)$country['id']) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($country['name'], ENT_QUOTES, 'UTF-8') ?>
+                                <?= $country['name'] ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
 
                     <label for="billing_phone">Phone</label>
-                    <input id="billing_phone" type="text" name="billing_phone" maxlength="20" value="<?= htmlspecialchars($address['b_phone'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input id="billing_phone" type="text" name="billing_phone" maxlength="20" value="<?= $address['b_phone'] ?? '' ?>">
                 </div>
 
                 <button type="submit"><?= $hasAddress ? 'Update Address' : 'Continue to Shipping' ?></button>
@@ -216,28 +165,17 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         const formData = new FormData(form);
 
-        try {
-            const response = await fetch("../includes/save_address.php", { // تأكد من مسار صحيح
-                method: "POST",
-                body: formData,
-                credentials: "same-origin",
-                headers: { "X-Requested-With": "XMLHttpRequest" }
-            });
+        const response = await fetch("../includes/save_address.php", {
+            method: "POST",
+            body: formData
+        });
 
-            if (!response.ok) {
-                throw new Error("Network error");
-            }
+        const result = await response.json();
 
-            const result = await response.json();
-
-            if (result.status === "success") {
-                window.location.href = result.redirect;
-            } else {
-                alert(result.message || "Error while saving address");
-            }
-        } catch (err) {
-          console.error("Save address error:", err);
-          alert("Unexpected error occurred.");
+        if (result.status === "success") {
+            window.location.href = result.redirect;
+        } else {
+            alert(result.message || "Error while saving address");
         }
     });
 });

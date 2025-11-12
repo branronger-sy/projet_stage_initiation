@@ -1,6 +1,6 @@
 <?php
 if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_user'])) {
-    $user_id = intval($_COOKIE['remember_user']); 
+    $user_id = intval($_COOKIE['remember_user']);
 
     $stmt = $pdo->prepare("SELECT id, email, full_name FROM users WHERE id = ?");
     $stmt->execute([$user_id]);
@@ -11,9 +11,10 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_user'])) {
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_name'] = $user['full_name'];
     } else {
-        setcookie("remember_user", "", time() - 3600, "/", "", true, true);
+        setcookie("remember_user", "", time() - 3600, "/");
     }
 }
+
 $from_checkout = isset($_GET['from']) && $_GET['from'] === 'checkout';
 
 if ($from_checkout) {
@@ -25,7 +26,6 @@ if ($from_checkout) {
     }
 
     if (isset($_SESSION['user_id'])) {
-        
         header("Location: index.php?page=address");
         exit;
     }
@@ -45,18 +45,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password_hash'])) {
-                session_regenerate_id(true);
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_email'] = $user['email'];
                 $_SESSION['user_name'] = $user['full_name'];
 
-                setcookie("remember_user", $user['id'], [
-                    'expires' => time() + 86400 * 30,
-                    'path' => '/',
-                    'secure' => isset($_SERVER['HTTPS']),
-                    'httponly' => true,
-                    'samesite' => 'Strict'
-                ]);
+                setcookie("remember_user", $user['id'], time() + 86400 * 30, "/");
 
                 header("Location: index.php?page=" . ($from_checkout ? "address" : "account"));
                 exit;
@@ -69,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     if (isset($_POST['signup'])) {
-        $name = htmlspecialchars(trim($_POST['name']), ENT_QUOTES, 'UTF-8');
+        $name = trim($_POST['name']);
         $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
         $password = $_POST['password'] ?? '';
 
@@ -85,18 +78,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($stmt->execute([$name, $email, $password_hash])) {
                     $user_id = $pdo->lastInsertId();
 
-                    session_regenerate_id(true);
                     $_SESSION['user_id'] = $user_id;
                     $_SESSION['user_email'] = $email;
                     $_SESSION['user_name'] = $name;
 
-                    setcookie("remember_user", $user_id, [
-                        'expires' => time() + 86400 * 30,
-                        'path' => '/',
-                        'secure' => isset($_SERVER['HTTPS']),
-                        'httponly' => true,
-                        'samesite' => 'Strict'
-                    ]);
+                    setcookie("remember_user", $user_id, time() + 86400 * 30, "/");
 
                     header("Location: index.php?page=" . ($from_checkout ? "address" : "home"));
                     exit;
@@ -112,7 +98,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 ?>
 
 <main class="container">
-
   <?php if ($from_checkout): ?>
   <section class="steps">
     <div class="step">01. Summary</div>
@@ -146,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <section class="form-section signup-section">
     <h2>Create a New Account</h2>
     <form method="POST">
-    <label for="signupName">Full Name</label>
+      <label for="signupName">Full Name</label>
       <input type="text" id="signupName" name="name" required placeholder="Your full name" />
 
       <label for="signupEmail">Email</label>
@@ -160,7 +145,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       <button type="submit" name="signup">Sign Up</button>
     </form>
   </section>
-
 </main>
 
 <style>

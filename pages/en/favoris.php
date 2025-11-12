@@ -9,8 +9,6 @@ if (empty($_SESSION['user_id'])) {
 }
 
 $user_id = (int)$_SESSION['user_id'];
-
-// إزالة عنصر واحد من المفضلة
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['remove_id'])) {
         $remove_id = (int)$_POST['remove_id'];
@@ -18,14 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$remove_id, $user_id]);
     }
 
-    // حذف جميع العناصر
     if (isset($_POST['clear_all'])) {
         $stmt = $pdo->prepare("DELETE FROM favoris WHERE user_id = ?");
         $stmt->execute([$user_id]);
     }
 }
 
-// جلب المفضلات
 $stmt = $pdo->prepare("
     SELECT 
         f.id AS fav_id, 

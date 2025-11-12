@@ -1,24 +1,18 @@
 <?php
-if (!defined('APP_INIT')) {
-    if (session_status() === PHP_SESSION_NONE) session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 
-    if (!isset($_SESSION['user_id'])) {
-        header('Content-Type: application/json');
-        echo json_encode(["status" => "error", "message" => "Not logged in"]);
-        exit;
-    }
-
-    require 'db.php';
+if (!isset($_SESSION['user_id'])) {
+    header('Content-Type: application/json');
+    echo json_encode(["status" => "error", "message" => "Not logged in"]);
+    exit;
 }
+
+require 'db.php';
 
 header('Content-Type: application/json');
 
 $user_id = (int) $_SESSION['user_id'];
 
-if (empty($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
-    echo json_encode(["status" => "error", "message" => "Invalid CSRF token"]);
-    exit;
-}
 
 $shipping_fullName = trim($_POST['shipping_fullName'] ?? '');
 $shipping_address  = trim($_POST['shipping_address'] ?? '');
@@ -77,14 +71,9 @@ if (!isset($_POST['same_as_shipping'])) {
     }
 }
 
-try {
     $stmt = $pdo->prepare("SELECT 1 FROM shipping_addresses WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $hasShipping = $stmt->fetchColumn();
-
-    $stmt = $pdo->prepare("SELECT 1 FROM billing_addresses WHERE user_id = ?");
-    $stmt->execute([$user_id]);
-    $hasBilling = $stmt->fetchColumn();
 
     if ($hasShipping) {
         $stmt = $pdo->prepare("UPDATE shipping_addresses 
@@ -104,6 +93,10 @@ try {
         ]);
     }
 
+    $stmt = $pdo->prepare("SELECT 1 FROM billing_addresses WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $hasBilling = $stmt->fetchColumn();
+
     if ($hasBilling) {
         $stmt = $pdo->prepare("UPDATE billing_addresses 
             SET full_name=?, address=?, city=?, zip_code=?, country_id=?, phone=? 
@@ -121,6 +114,7 @@ try {
             $billing_zip, $billing_country, $billing_phone
         ]);
     }
+    $_SESSION['checkout_progress']['address'] = true;
 
     echo json_encode([
         "status"   => "success",
@@ -128,8 +122,3 @@ try {
     ]);
     exit;
 
-} catch (PDOException $e) {
-    error_log("DB Error in save_address.php: " . $e->getMessage());
-    echo json_encode(["status" => "error", "message" => "Database error occurred"]);
-    exit;
-}

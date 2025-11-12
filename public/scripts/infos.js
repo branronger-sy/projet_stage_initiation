@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const formData = new FormData(form);
     formData.append("action", "update_info");
 
-    try {
       const res = await fetch("../includes/update_infos.php", {
         method: "POST",
         body: formData
@@ -43,11 +42,5 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.status === "success") {
         setTimeout(() => location.reload(), 1200);
       }
-    } catch (err) {
-      console.error(err);
-
-      message.textContent = "Error updating info";
-      message.style.color = "red";
-    }
   });
 });
