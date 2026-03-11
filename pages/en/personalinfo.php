@@ -1,5 +1,8 @@
 <?php
-session_start();
+if(!isset($_SESSION['user_id'])){
+  header("Location: index.php?page=login");
+  exit;
+}
 $user_id = $_SESSION['user_id'] ?? 1;
 $query = "
     SELECT u.full_name, u.email, 
@@ -19,7 +22,7 @@ $hasBilling = !empty($user['b_full_name']) || !empty($user['b_address']) || !emp
 <main class="personal-info-page">
   <h1>My Personal Information</h1>
 
-  <form id="infoForm" method="post" action="update_personal_info.php" autocomplete="off">
+  <form id="infoForm" method="post" action="update_info.php" autocomplete="off">
     <div class="info-item">
       <label>Full Name:</label>
       <p class="view"><?php echo $user['full_name']; ?></p>

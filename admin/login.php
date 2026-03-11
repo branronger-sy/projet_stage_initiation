@@ -1,6 +1,7 @@
 <?php
 session_start();
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+  $_SESSION['t']=time();
     header("Location: dashboard.php");
     exit();
 }
@@ -29,7 +30,6 @@ $max_attempts = 5;
   <?php endif; ?>
 
   <form action="includes/process_login.php" method="POST">
-    <!-- CSRF Token supprimé -->
     <label for="username">Username</label>
     <input type="text" name="username" id="username" required>
 
@@ -47,7 +47,6 @@ if (isset($_SESSION['lockout_seconds'])): ?>
   </script>
   <?php unset($_SESSION['lockout_seconds']); ?>
 <?php endif; ?>
-
 <script>
 if (typeof lockSeconds !== "undefined") {
     const errorDiv = document.querySelector(".error");

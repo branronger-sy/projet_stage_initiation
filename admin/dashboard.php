@@ -1,7 +1,7 @@
 <?php
-  // include "includes/auth.php"; // désactivé pour la soutenance
   include "includes/header.php";
   include "includes/db.php";
+  include "includes/auth.php"
 ?>
 <link rel="stylesheet" href="styles/admin.css">
 </head>

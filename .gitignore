@@ -1,0 +1,20 @@
+# Sensitive Configuration
+.env
+includes/.env
+
+# Database Dumps
+*.sql
+
+# Error Logs
+*.log
+error_log.txt
+admin/error_log.txt
+
+# IDE/System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# OS generated files
+desktop.ini

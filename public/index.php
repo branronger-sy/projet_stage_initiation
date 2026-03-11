@@ -3,7 +3,10 @@ ob_start();
 
 session_start();
 require '../includes/db.php';
-
+if(@$_POST['start_checkout']==1){
+    header('Location: index.php?page=summary');
+    exit;
+}
 $allowed_langs = ['en', 'ar', 'fr'];
 $allowed_currencies = ['MAD', 'USD', 'EUR'];
 
@@ -12,7 +15,7 @@ if (isset($_GET['lang'])) {
     if (in_array($lang, $allowed_langs)) {
         $_SESSION['lang'] = $lang;
     }
-    header('Location: index.php');
+    header('Location: index.php?page='.$page);
     exit;
 }
 

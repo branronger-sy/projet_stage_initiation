@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     saveBtn.classList.toggle("hidden", !editMode);
     cancelBtn.classList.toggle("hidden", !editMode);
     passwordBtn.classList.toggle("hidden", !editMode);
-    console.log("✅ infos.js loaded");
 
   }
 

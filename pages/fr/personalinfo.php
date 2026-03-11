@@ -1,5 +1,4 @@
 <?php
-require "../includes/config.php";
 
 session_start();
 if (!isset($_SESSION['user_id'])) {
@@ -30,8 +29,7 @@ $hasBilling = !empty($user['b_full_name']) || !empty($user['b_address']) || !emp
 <main class="personal-info-page">
   <h1>My Personal Information</h1>
 
-  <form id="infoForm" method="post" action="update_personal_info.php" autocomplete="off">
-    <input type="hidden" value="<?php echo htmlspecialchars($csrf_token); ?>">
+  <form id="infoForm" method="post" action="update_info.php" autocomplete="off">
     <div class="info-item">
       <label>Full Name:</label>
       <p class="view"><?php echo htmlspecialchars($user['full_name']); ?></p>
@@ -41,6 +39,11 @@ $hasBilling = !empty($user['b_full_name']) || !empty($user['b_address']) || !emp
       <label>Email:</label>
       <p class="view"><?php echo htmlspecialchars($user['email']); ?></p>
       <input class="edit hidden" type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
+    </div>
+    <div class="info-item">
+      <label>Full Name:</label>
+      <p class="view"><?php echo htmlspecialchars($user['full_name']); ?></p>
+      <input class="edit hidden" type="text" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
     </div>
     <div class="info-item hidden password-section">
       <label>New Password:</label>
