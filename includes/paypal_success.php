@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 require 'db.php';
 header('Content-Type: application/json');
 
-$clientId = "AcwPzd4ufDoHiYZSvY_tDcIkaR2KgNHY3ruNDUmcWCw0QyshN1Rn9l-aD1V1qcNEh7r1tA0whxghHFet";
-$secret   = "EGvUliCc-OUIlTjKOdMjVx84y_nGZbIFIB25V7xwlk6SNf0uDG3thw9NMyhC953-qvt28_eC02APIck5";
+$clientId = "THE_CLIENT_ID";
+$secret   = "THE_SECRET_KEY";
 
 $data = json_decode(file_get_contents("php://input"), true);
 if (!isset($data['orderID'])) {
